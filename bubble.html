@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Visualization</title>
+    <style>
+        body {
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #canvas {
+            border: 2px solid #fff;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #00ff9d;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #39ff14;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <div class="controls">
+        <button onclick="startBubbleSort()">Start Bubble Sort</button>
+    </div>
+
+    <script>
+        // Global Variables
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let array = [];
+        let barWidth;
+        let delay = 20; // Milliseconds between each swap
+        let isSorting = false; // Flag to prevent multiple clicks during sorting
+
+        // Initialize array with random values
+        function randomizeArray() {
+            array = [];
+            for (let i = 0; i < 50; i++) {
+                array.push(Math.floor(Math.random() * canvas.height));
+            }
+            render();
+        }
+
+        // Render the bars on the canvas
+        function render() {
+            barWidth = canvas.width / array.length;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < array.length; i++) {
+                ctx.fillStyle = "rgb(0, 255, 157)";
+                ctx.fillRect(i * barWidth, canvas.height - array[i], barWidth, array[i]);
+            }
+        }
+
+        // Bubble Sort Algorithm with Visualization
+        async function bubbleSort() {
+            if (isSorting) return;
+            isSorting = true;
+            for (let i = 0; i < array.length - 1; i++) {
+                for (let j = 0; j < array.length - i - 1; j++) {
+                    if (array[j] > array[j + 1]) {
+                        // Swap values
+                        let temp = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = temp;
+
+                        render(); // Re-render after each swap
+
+                        // Pause the animation for a brief moment to visualize the swap
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            isSorting = false; // Sorting is complete
+        }
+
+        // Start the Bubble Sort animation
+        function startBubbleSort() {
+            randomizeArray(); // Randomize the array before sorting
+            bubbleSort(); // Start sorting
+        }
+
+        // Initialize the canvas with random values
+        randomizeArray();
+    </script>
+</body>
+</html>

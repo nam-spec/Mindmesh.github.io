@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N-Queens Problem - Visualization</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      grid-template-rows: repeat(8, 50px);
+      gap: 1px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      background-color: lightgray;
+      position: relative;
+    }
+    .queen {
+      background-color: red;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="matrix-layers">
+    <div class="binary-grid"></div>
+    <div id="matrix-rain"></div>
+  </div>
+
+  <div class="app-container">
+    <header class="header">
+      <h1>N-Queens Problem</h1>
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search algorithms..." id="search-input">
+      </div>
+    </header>
+
+    <div class="algorithm-description">
+      <h2>Backtracking Algorithm for N-Queens</h2>
+      <p>This algorithm places queens on a chessboard such that no two queens threaten each other. It uses backtracking to try different configurations.</p>
+
+      <pre>
+function solveNQueens(n) {
+  let board = Array(n).fill().map(() => Array(n).fill(false));
+  
+  function placeQueens(row) {
+    if (row === n) {
+      return true;
+    }
+    for (let col = 0; col < n; col++) {
+      if (isSafe(board, row, col)) {
+        board[row][col] = true;
+        if (placeQueens(row + 1)) {
+          return true;
+        }
+        board[row][col] = false;
+      }
+    }
+    return false;
+  }
+
+  placeQueens(0);
+}
+
+function isSafe(board, row, col) {
+  // Check the column, and diagonals
+}
+      </pre>
+
+      <h3>Visualization</h3>
+      <div id="n-queens-board" class="board"></div>
+    </div>
+
+    <button onclick="startNQueensVisualization()">Start Visualization</button>
+  </div>
+
+  <script src="../scripts.js"></script>
+  <script>
+    function startNQueensVisualization() {
+      const boardContainer = document.getElementById('n-queens-board');
+      boardContainer.innerHTML = '';
+      
+      const n = 8; // Change this to set the size of the chessboard
+      let board = Array(n).fill().map(() => Array(n).fill(false));
+
+      function solveNQueens(row) {
+        if (row === n) {
+          return true;
+        }
+        for (let col = 0; col < n; col++) {
+          if (isSafe(board, row, col)) {
+            board[row][col] = true;
+            updateBoard(board);
+            if (solveNQueens(row + 1)) {
+              return true;
+            }
+            board[row][col] = false;
+            updateBoard(board);
+          }
+        }
+        return false;
+      }
+
+      function updateBoard(board) {
+        boardContainer.innerHTML = '';
+        board.forEach(row => {
+          row.forEach(cell => {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            if (cell) {
+              const queen = document.createElement('div');
+              queen.className = 'queen';
+              div.appendChild(queen);
+            }
+            boardContainer.appendChild(div);
+          });
+        });
+      }
+
+      function isSafe(board, row, col) {
+        // Check column and diagonals
+        for (let i = 0; i < row; i++) {
+          if (board[i][col]) return false;
+          if (col - (row - i) >= 0 && board[i][col - (row - i)]) return false;
+          if (col + (row - i) < n && board[i][col + (row - i)]) return false;
+        }
+        return true;
+      }
+
+      solveNQueens(0);
+    }
+  </script>
+</body>
+</html>
