@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: black;
+      color: #00ff00;
+      overflow: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Video Background */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.3;
+    }
+
+    /* Matrix Rain Overlay */
+    .matrix-rain {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .rain-drop {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      animation: float 1s infinite;
+      opacity: 0.5;
+    }
+
+    @keyframes float {
+      from { transform: translateY(-100px); }
+      to { transform: translateY(100vh); }
+    }
+
+    /* Neon text and glitch effects */
+    .neon-text {
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 40px #00ff00;
+      animation: flicker 1.5s infinite alternate;
+    }
+
+    .neon-box {
+      box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00, inset 0 0 5px #00ff00;
+    }
+
+    @keyframes flicker {
+      0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 40px #00ff00;
+      }
+      20%, 24%, 55% {
+        text-shadow: none;
+      }
+    }
+
+    .matrix-decode {
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+
+    .matrix-type {
+      font-family: monospace;
+      color: #00ff00;
+      border-right: 2px solid #00ff00;
+      animation: cursor-blink 1s infinite;
+    }
+
+    @keyframes cursor-blink {
+      0%, 100% { border-color: transparent; }
+      50% { border-color: #00ff00; }
+    }
+
+    /* Scanning line effect */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #00ff00, transparent);
+      animation: scanning 3s linear infinite;
+    }
+
+    @keyframes scanning {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100vh); }
+    }
+
+    /* Main content section */
+    .dashboard {
+      position: relative;
+      z-index: 20;
+      padding: 30px;
+      padding-top: 80px;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-bottom: 2px solid #00ff00;
+      padding: 15px;
+      z-index: 30;
+    }
+
+    .top-bar .neon-text {
+      color: #00ff00;
+    }
+
+    .top-bar .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .top-bar .user-info span {
+      font-size: 1.2em;
+    }
+
+    .top-bar .status {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.9em;
+    }
+
+    /* Glitch text */
+    .glitch-text {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5em;
+      animation: glitch 2s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      25% { transform: translate(-5px, 5px); }
+      50% { transform: translate(5px, -5px); }
+      75% { transform: translate(-5px, 5px); }
+      100% { transform: translate(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Video Background -->
+  <video class="video-background" autoplay loop muted>
+    <source src="path/to/video.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Matrix Rain Overlay -->
+  <div class="matrix-rain" id="matrix-rain"></div>
+
+  <!-- Top Bar (Agent Info) -->
+  <div class="top-bar">
+    <div class="user-info">
+      <div class="avatar">
+        <img src="avatar-icon.png" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+        <span class="status-dot"></span>
+      </div>
+      <div>
+        <div class="matrix-decode neon-text" id="decoded-text">WELCOME BACK AGENT NEO</div>
+        <div class="matrix-type neon-text" id="agent-name">_</div>
+      </div>
+    </div>
+    <div class="status">
+      <div>SECURITY LEVEL: ALPHA</div>
+      <div>SIGNAL STRENGTH: 98%</div>
+      <div>SYSTEM ACTIVE</div>
+    </div>
+  </div>
+
+  <!-- Glitch Text -->
+  <div class="glitch-text" id="glitch-text">SYSTEM BREACH</div>
+
+  <!-- Main Content Section -->
+  <div class="dashboard">
+    <!-- More content can be added here -->
+  </div>
+
+  <script>
+    // Matrix Rain Effect
+    const matrixRain = document.getElementById('matrix-rain');
+    const characters = '01アイウエオカキクケコサシスセソタチツテト';
+    const columns = Math.floor(window.innerWidth / 15);
+    
+    const drops = [];
+    for (let i = 0; i < columns; i++) {
+      drops.push({
+        y: Math.random() * -100,
+        char: characters[Math.floor(Math.random() * characters.length)],
+        speed: 1 + Math.random() * 3,
+        opacity: Math.random() * 0.5 + 0.5
+      });
+    }
+
+    function createMatrixRain() {
+      matrixRain.innerHTML = '';
+      drops.forEach((drop, i) => {
+        const rainDropElement = document.createElement('div');
+        rainDropElement.classList.add('rain-drop');
+        rainDropElement.innerText = drop.char;
+        rainDropElement.style.left = `${i * 15}px`;
+        rainDropElement.style.top = `${drop.y}px`;
+        rainDropElement.style.opacity = drop.opacity;
+        rainDropElement.style.color = `rgb(0, ${155 + Math.random() * 100}, 0)`;
+        rainDropElement.style.textShadow = '0 0 8px rgba(0, 255, 0, 0.8)';
+        matrixRain.appendChild(rainDropElement);
+        
+        drop.y = drop.y > window.innerHeight ? -20 : drop.y + drop.speed;
+        if (Math.random() > 0.95) {
+          drop.char = characters[Math.floor(Math.random() * characters.length)];
+        }
+      });
+
+      requestAnimationFrame(createMatrixRain);
+    }
+
+    createMatrixRain();
+
+    // Matrix Text Decoder
+    const decodedTextElement = document.getElementById('decoded-text');
+    const welcomeText = 'WELCOME BACK AGENT NEO';
+    let currentIndex = 0;
+    const scrambleText = () => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()';
+      let result = '';
+      for (let i = 0; i < welcomeText.length; i++) {
+        if (i < currentIndex) {
+          result += welcomeText[i];
+        } else {
+          result += chars[Math.floor(Math.random() * chars.length)];
+        }
+      }
+      decodedTextElement.innerText = result;
+
+      if (currentIndex < welcomeText.length) {
+        currentIndex++;
+        setTimeout(scrambleText, 100);
+      }
+    };
+    scrambleText();
+
+    // Agent Name Typing Effect
+    const agentNameElement = document.getElementById('agent-name');
+    const agentName = "THOMAS ANDERSON";
+    let index = 0;
+    const typeText = () => {
+      if (index < agentName.length) {
+        agentNameElement.innerText += agentName[index];
+        index++;
+        setTimeout(typeText, 150);
+      }
+    };
+    setTimeout(typeText, 2000);
+
+    // Glitch Text Effect
+    const glitchTextElement = document.getElementById('glitch-text');
+    const glitchTexts = ['SYSTEM BREACH', 'MATRIX LOADED', 'INITIALIZING', 'ACCESS GRANTED'];
+    setInterval(() => {
+      glitchTextElement.innerText = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
+    }, 2000);
+  </script>
+
+</body>
+</html>

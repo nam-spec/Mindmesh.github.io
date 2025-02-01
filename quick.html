@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Sort Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1c1c1c;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+    }
+    .array-bar {
+      display: inline-block;
+      width: 10px;
+      margin: 2px;
+      background-color: #0f0;
+      height: 100px;
+      transition: height 0.1s ease-in-out;
+    }
+    .button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #00ff00;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: black;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #39ff14;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quick Sort Visualization</h1>
+    <div id="array-container"></div>
+    <button class="button" onclick="startSorting()">Start Sorting</button>
+  </div>
+
+  <script>
+    let array = [];
+    const numBars = 50;
+
+    function generateArray() {
+      array = [];
+      for (let i = 0; i < numBars; i++) {
+        array.push(Math.floor(Math.random() * 500) + 10);
+      }
+      renderArray();
+    }
+
+    function renderArray() {
+      const container = document.getElementById("array-container");
+      container.innerHTML = '';
+      array.forEach((value) => {
+        const bar = document.createElement("div");
+        bar.style.height = `${value}px`;
+        bar.classList.add("array-bar");
+        container.appendChild(bar);
+      });
+    }
+
+    async function quickSort(arr = array, low = 0, high = arr.length - 1) {
+      if (low < high) {
+        let pivotIndex = await partition(arr, low, high);
+        await Promise.all([
+          quickSort(arr, low, pivotIndex - 1),
+          quickSort(arr, pivotIndex + 1, high)
+        ]);
+      }
+    }
+
+    async function partition(arr, low, high) {
+      const pivot = arr[high];
+      let i = low - 1;
+      const bars = document.querySelectorAll('.array-bar');
+      bars[high].style.backgroundColor = "#ff0000"; // Mark pivot as red
+
+      for (let j = low; j < high; j++) {
+        bars[j].style.backgroundColor = "#ffff00"; // Mark compared element yellow
+        if (arr[j] <= pivot) {
+          i++;
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+          renderArray();
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        bars[j].style.backgroundColor = "#0f0"; // Reset color
+      }
+
+      [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+      renderArray();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      bars[high].style.backgroundColor = "#0f0"; // Reset pivot color
+      return i + 1;
+    }
+
+    function startSorting() {
+      quickSort();
+    }
+
+    generateArray();
+  </script>
+</body>
+</html>
