@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Mesh</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #matrix-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .content {
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #9c3fff 0%, #ff61e6 100%);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(156, 63, 255, 0.3);
+        }
+
+        .brackets {
+            color: #00e5ff;
+            font-size: 48px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .title {
+            color: white;
+            font-size: 64px;
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        h3 {
+            color: white;
+            font-size: 20px;
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="content">
+        <div class="icon">
+            <div class="brackets">&lt;/&gt;</div>
+        </div>
+        <h1 class="title">Mind Mesh</h1>
+        <h3> In the web of logic, every node is a challenge, every edge a solution. MindMesh is not just a platform; it’s the key to decode the matrix of data structures and algorithms. The question is, are you ready to master it?"  </h3>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize canvas to fill window
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '01';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = new Array(Math.floor(columns)).fill(1);
+
+        // Function to draw the matrix animation
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0';
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Redirect after 3 seconds to a local HTML file
+        setTimeout(() => {
+            window.location.href = 'login.html'; // Replace with the path to your local HTML file
+        }, 3000);
+    </script>
+</body>
+</html>

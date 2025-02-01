@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.2;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 0;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 3em;
+      margin: 0;
+      animation: glowText 2s infinite alternate;
+    }
+
+    .search-bar {
+      max-width: 600px;
+      margin: 20px auto;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #00ff00;
+      background: rgba(0, 20, 0, 0.8);
+      border-radius: 25px;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1em;
+      outline: none;
+    }
+
+    .search-bar input:focus {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+    }
+
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px 0;
+    }
+
+    .lesson-card {
+      background: rgba(0, 20, 0, 0.8);
+      border: 1px solid #00ff00;
+      border-radius: 15px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    }
+
+    .lesson-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
+      animation: scan 2s linear infinite;
+    }
+
+    .lesson-type {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 255, 0, 0.2);
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+    }
+
+    .lesson-title {
+      font-size: 1.4em;
+      margin: 15px 0;
+      color: #00ff00;
+    }
+
+    .lesson-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 10px 0;
+      font-size: 0.9em;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 255, 0, 0.1);
+      border-radius: 3px;
+      margin: 15px 0;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: #00ff00;
+      width: var(--progress);
+      transition: width 0.3s ease;
+    }
+
+    .floating-icons {
+      position: fixed;
+      pointer-events: none;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 24px;
+      animation: float 3s infinite ease-in-out;
+      opacity: 0.5;
+    }
+
+    @keyframes glowText {
+      from { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00; }
+      to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+    }
+
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .play-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(0, 255, 0, 0.2);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: 15px;
+    }
+
+    .play-btn:hover {
+      background: rgba(0, 255, 0, 0.4);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    }
+
+    .difficulty {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8em;
+      margin-top: 10px;
+    }
+
+    .easy { background: rgba(0, 255, 0, 0.2); }
+    .medium { background: rgba(255, 165, 0, 0.2); color: orange; }
+    .hard { background: rgba(255, 0, 0, 0.2); color: #ff4444; }
+
+  </style>
+</head>
+<body>
+  <canvas class="matrix-bg" id="matrix"></canvas>
+ 
+  <div class="container">
+    <header class="header">
+      <h1 class="logo">MindMesh DSA</h1>
+      <div class="search-bar">
+        <input type="text" placeholder="Search for DSA topics, algorithms, or problems..." />
+      </div>
+    </header>
+
+    <div class="lessons-grid">
+      <!-- Arrays Section -->
+      <div class="lesson-card">
+        <span class="lesson-type">📹 Video Lesson</span>
+        <h3 class="lesson-title">Arrays: Introduction</h3>
+        <div class="lesson-info">
+          <span>⏱️ 15 mins</span>
+          <span>👥 2.5k views</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 75%"></div>
+        </div>
+        <span class="difficulty easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/c-arrays/" class="play-btn">▶ Continue Learning</a>
+      </div>
+
+      <!-- Linked Lists -->
+      <div class="lesson-card">
+        <span class="lesson-type">🎯 Practice</span>
+        <h3 class="lesson-title">Linked Lists: Reversal</h3>
+        <div class="lesson-info">
+          <span>⭐ 4.8/5</span>
+          <span>📝 10 problems</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 30%"></div>
+        </div>
+        <span class="difficulty medium">Medium</span>
+        <a href="#" class="play-btn">▶ Start Practice</a>
+      </div>
+
+      <!-- Trees -->
+      <div class="lesson-card">
+        <span class="lesson-type">📚 Tutorial</span>
+        <h3 class="lesson-title">Binary Trees: Traversal</h3>
+        <div class="lesson-info">
+          <span>📖 25 mins</span>
+          <span>🎯 5 exercises</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 0%"></div>
+        </div>
+        <span class="difficulty hard">Hard</span>
+        <a href="#" class="play-btn">▶ Begin Tutorial</a>
+      </div>
+
+      <!-- Graphs -->
+      <div class="lesson-card">
+        <span class="lesson-type">🎮 Interactive</span>
+        <h3 class="lesson-title">Graph Algorithms: DFS</h3>
+        <div class="lesson-info">
+          <span>🎲 Interactive</span>
+          <span>⭐ 4.9/5</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 45%"></div>
+        </div>
+        <span class="difficulty medium">Medium</span>
+        <a href="#" class="play-btn">▶ Play Simulation</a>
+      </div>
+
+      <!-- Dynamic Programming -->
+      <div class="lesson-card">
+        <span class="lesson-type">🏆 Challenge</span>
+        <h3 class="lesson-title">Dynamic Programming</h3>
+        <div class="lesson-info">
+          <span>⚡ Advanced</span>
+          <span>🎯 3 problems</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 15%"></div>
+        </div>
+        <span class="difficulty hard">Hard</span>
+        <a href="#" class="play-btn">▶ Take Challenge</a>
+      </div>
+
+      <!-- Sorting -->
+      <div class="lesson-card">
+        <span class="lesson-type">📹 Video Series</span>
+        <h3 class="lesson-title">Sorting Algorithms</h3>
+        <div class="lesson-info">
+          <span>🎬 5 videos</span>
+          <span>⏱️ 45 mins</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress" style="--progress: 60%"></div>
+        </div>
+        <span class="difficulty medium">Medium</span>
+        <a href="https://www.youtube.com/watch?v=rbbTd-gkajw&pp=ygUjc29ydGluZyBhbGdvcml0bWFzxLEgZGF0YSBzdHJ1Y3R1cmU%3D" class="play-btn">▶ Watch Series</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Matrix rain effect
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1;
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#00ff00';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = characters.charAt(Math.floor(Math.random() * characters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    // Floating icons
+    function createFloatingIcons() {
+      const icons = ['⚡', '🔍', '💡', '🎯', '🚀', '💻', '📊', '🔄'];
+      const container = document.createElement('div');
+      container.className = 'floating-icons';
+      document.body.appendChild(container);
+
+      icons.forEach((icon, index) => {
+        const div = document.createElement('div');
+        div.className = 'icon';
+        div.textContent = icon;
+        div.style.left = `${Math.random() * 100}vw`;
+        div.style.top = `${Math.random() * 100}vh`;
+        div.style.animationDelay = `${index * 0.5}s`;
+        container.appendChild(div);
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    setInterval(draw, 50);
+    createFloatingIcons();
+  </script>
+</body>
+</html>
